@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+<style>
+    .main-title {
+        color: #2c3e50;
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .crime-card {
+        background: #fff;
+        border: 1px solid #e1e1e1;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: box-shadow 0.2s;
+        cursor: pointer;
+    }
+
+    .crime-card:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .btn-info {
+        background-color: #fff;
+        color: #2c3e50;
+        border: 1px solid #2c3e50;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .btn-info:hover {
+        background-color: #2c3e50;
+        color: #fff;
+    }
+
+    .chat-container {
+        position: fixed;
+        right: 2rem;
+        top: 5rem;
+        width: 300px;
+        height: 500px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-header {
+        padding: 1rem;
+        border-bottom: 1px solid #e1e1e1;
+        font-weight: 600;
+    }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+    }
+
+    .chat-message {
+        background: #f8f9fa;
+        padding: 0.75rem;
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+    }
+
+    .chat-input {
+        padding: 1rem;
+        border-top: 1px solid #e1e1e1;
+    }
+
+    .chat-input form {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .chat-input textarea {
+        flex: 1;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 0.5rem;
+        resize: none;
+    }
+
+    .modal {
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .report-button {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: #2c3e50;
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+
+    .report-button:hover {
+        transform: translateY(-2px);
+    }
+</style>
+
+<h1 class="main-title">Crime Reports</h1>
+
+<div class="button-container">
+    <a href="{{ url_for('views.stats') }}" class="btn btn-info">View Stats</a>
+    <a href="{{ url_for('views.community_resources') }}" class="btn btn-info">Community Resources</a>
+    <a href="{{ url_for('views.law_enforcement') }}" class="btn btn-info">Law Enforcement</a>
+    <a href="{{ url_for('views.public_awareness') }}" class="btn btn-info">Public Awareness</a>
+    <a href="{{ url_for('views.educational_resources') }}" class="btn btn-info">Educational Resources</a>
+</div>
+
+<div class="container">
+    {% for crime in crimes %}
+    <div class="crime-card" onclick="openModal('{{ crime.id }}', '{{ crime.title }}', '{{ crime.location }}', '{{ crime.data }}', '{{ crime.date.strftime('%Y-%m-%d %H:%M:%S') }}', '{{ crime.user.first_name }}')">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">{{ crime.title }}</h3>
+            <span class="text-muted">{{ crime.location }}</span>
+        </div>
+        <small class="text-muted">
+            Posted by {{ crime.user.first_name }} on {{ crime.date.strftime('%Y-%m-%d %H:%M:%S') }}
+        </small>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="chat-container">
+    <div class="chat-header">Chat Box</div>
+    <div class="chat-messages">
+        {% for chat in chats %}
+        <div class="chat-message">
+            <small class="text-muted">{{ chat.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+            <div>{{ chat.text }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="chat-input">
+        <form method="POST" action="/">
+            <textarea name="text" required placeholder="Type a message..."></textarea>
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+    </div>
+</div>
+
+<a href="/report_crime" class="report-button">
+    Report a Crime
+</a>
+
+<!-- Modal -->
+<div id="crimeModal" class="modal" style="display: none;">
+  <div class="modal-content bg-black text-danger p-4" style="border-radius: 15px;">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3 id="modalTitle" class="fw-bold"></h3>
+    <p><strong>Location: </strong><span id="modalLocation"></span></p> <br>
+    <p><strong>Description:</strong> <br><br><span id="modalDescription"></span></p> <br><br>
+    <p><strong>Date:</strong><br> <span id="modalDate"></span></p>
+    <p><strong>Posted by:</strong> <span id="modalUser"></span></p>
+  </div>
+</div>
+
+<script>
+  function openModal(id, title, location, description, date, user) {
+    // Populate modal content
+    document.getElementById("modalTitle").textContent = title;
+    document.getElementById("modalLocation").textContent = location;
+    document.getElementById("modalDescription").textContent = description;
+    document.getElementById("modalDate").textContent = date;
+    document.getElementById("modalUser").textContent = user;
+
+    // Display the modal
+    document.getElementById("crimeModal").style.display = "flex";
+}
+
+function closeModal() {
+    // Hide the modal
+    document.getElementById("crimeModal").style.display = "none";
+}
+</script>
+
+{% endblock %}

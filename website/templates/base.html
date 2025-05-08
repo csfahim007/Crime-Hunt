@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+
+    <title>{% block title %}Home{% endblock %}</title>
+
+    <style>
+      /* Global Styles */
+      body {
+        background-color: #fff;
+        color: #333;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.6;
+      }
+
+      .navbar {
+        background-color: #fff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        padding: 0.5rem 1rem;
+      }
+
+      .navbar-brand {
+        color: #2c3e50 !important;
+        font-weight: 600;
+        font-size: 1.2rem;
+      }
+
+      .nav-link {
+        color: #555 !important;
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+        transition: color 0.2s;
+      }
+
+      .nav-link:hover {
+        color: #2c3e50 !important;
+      }
+
+      .container {
+        max-width: 1140px;
+        padding: 2rem 1rem;
+      }
+
+      .alert {
+        border-radius: 4px;
+        font-size: 0.9rem;
+        padding: 0.75rem 1.25rem;
+      }
+
+      .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+      }
+
+      .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg">
+      <a class="navbar-brand" href="/">CrimeMap</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbar"
+        aria-controls="navbar"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon" style="color: #f00;">☰</span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav ml-auto">
+          {% if current_user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" id="home" href="/">Home</a>
+          </li>
+          <li>
+            <a class="nav-link" id="stats" href="{{ url_for('views.stats') }}">Stats</a>
+          </li>
+          {% if user.id == 1 %}
+          <li class="nav-item">
+            <a class="nav-link" id="admin-tools" href="/admin-tools">Tools</a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" id="logout" href="{{ url_for('views.live_map') }}">LiveMap</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="logout" href="/logout">Logout</a>
+          </li>
+
+
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" id="login" href="/login">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="signUp" href="/sign-up">Sign Up</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="container mt-3">
+      {% for category, message in messages %}
+      <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+  
+    <div class="container">{% block content %} {% endblock %}</div>
+
+    
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+
+    
+    {% block javascript %}
+    {% endblock %}
+  </body>
+</html>
