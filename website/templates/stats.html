@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Crime Statistics{% endblock %}
+
+{% block content %}
+<style>
+    .stats-container {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .filter-form {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 4px;
+        margin-bottom: 2rem;
+    }
+
+    .filter-form select,
+    .filter-form input {
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        width: 100%;
+    }
+
+    .stats-table {
+        width: 100%;
+        margin-bottom: 2rem;
+        border-collapse: collapse;
+    }
+
+    .stats-table th,
+    .stats-table td {
+        padding: 0.75rem;
+        border: 1px solid #dee2e6;
+        text-align: left;
+    }
+
+    .stats-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+
+    .location-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .location-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .chart-container {
+        margin-top: 2rem;
+        padding: 1rem;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    h1, h2, h3 {
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+    }
+</style>
+
+<div class="stats-container">
+    <h1>Crime Statistics</h1>
+
+    <div class="filter-form">
+        <form method="get" action="{{ url_for('views.stats') }}" class="row">
+            <div class="col-md-3">
+                <label for="location">Location</label>
+                <select id="location" name="location" class="form-control">
+                    <option value="">All Locations</option>
+                    {% for location in locations %}
+                        <option value="{{ location }}" {% if location_filter == location %}selected{% endif %}>
+                            {{ location }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="start_date">Start Date</label>
+                <input type="date" id="start_date" name="start_date" class="form-control" 
+                       value="{{ request.args.get('start_date', '') }}">
+            </div>
+            <div class="col-md-3">
+                <label for="end_date">End Date</label>
+                <input type="date" id="end_date" name="end_date" class="form-control"
+                       value="{{ request.args.get('end_date', '') }}">
+            </div>
+            <div class="col-md-3">
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="stats-container">
+                <h3>Total Crimes: {{ crime_count }}</h3>
+                <h4>Crimes by Location</h4>
+                <ul class="location-list">
+                    {% for location, count in location_counts.items() %}
+                        <li>{{ location }}: {{ count }} crime(s)</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="chart-container">
+                <canvas id="crimeChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-container">
+        <h3>Crime Reports</h3>
+        <table class="stats-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Location</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for crime in crimes %}
+                    <tr>
+                        <td>{{ crime.title }}</td>
+                        <td>{{ crime.location }}</td>
+                        <td>{{ crime.date }}</td>
+                        <td>{{ crime.data }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const locations1 = JSON.parse('{{ locations | tojson | safe }}');
+    const counts1 = JSON.parse('{{ counts | tojson | safe }}');
+
+    const ctx = document.getElementById('crimeChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: locations1,
+            datasets: [{
+                label: 'Number of Crimes',
+                data: counts1,
+                backgroundColor: '#2c3e50',
+                borderColor: '#2c3e50',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

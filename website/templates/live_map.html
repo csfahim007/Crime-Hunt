@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Live Map{% endblock %}
+
+{% block content %}
+<style>
+    .map-container {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    #map {
+        height: 550px;
+        width: 100%;
+        border-radius: 4px;
+        margin-top: 1rem;
+    }
+
+    .search-form {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+
+    .search-form input {
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        width: 100%;
+    }
+
+    .location-form {
+        margin-bottom: 1rem;
+    }
+
+    h1 {
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background-color: #2c3e50;
+        border-color: #2c3e50;
+    }
+
+    .btn-primary:hover {
+        background-color: #34495e;
+        border-color: #34495e;
+    }
+</style>
+
+<div class="map-container">
+    <h1>Live Map</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <form method="POST" class="search-form">
+                <div class="input-group">
+                    <input type="text" name="location" class="form-control" placeholder="Search for a location" required>
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <form id="location-form" method="center_on_user" class="location-form">
+                <button id="center-button" class="btn btn-primary btn-block">Center on My Location</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="map">{{ map_html | safe }}</div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    // Add any additional JavaScript for map functionality here
+</script>
+{% endblock %}

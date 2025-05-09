@@ -81,3 +81,134 @@ def stats():
         counts=counts,
         location_filter=location_filter,
         crime_count=len(filtered_crimes),location_counts=location_counts, crimes=crimes)
+
+@views.route('/delete-crime/<int:crime_id>', methods=['POST'])
+@login_required
+def delete_crime(crime_id):
+    if current_user.id != 1:  
+        flash('Access denied!', category='error')
+        return redirect(url_for('views.home'))
+
+    crime = Crime.query.get(crime_id)
+    if crime:
+        db.session.delete(crime)
+        db.session.commit()
+        flash('Crime deleted successfully!', category='success')
+    else:
+        flash('Crime not found.', category='error')
+    return redirect(url_for('views.admin_tools'))  
+
+#----------------------------------------------------------------------------------------------
+
+@views.route('/report_crime', methods=['GET', 'POST'])
+@login_required
+def report_crime():
+    crimes = Crime.query.all()
+    categories = Category.query.all()
+    if request.method == 'POST': 
+        title = request.form.get('Title')  
+        location = request.form.get('Location')  
+        data = request.form.get('Description')  
+        category_id = request.form.get('category-id')  
+
+        if not title or len(title) < 3:
+            flash('Title is too short!', category='error')
+        elif not location or len(location) < 3:
+            flash('Location is too short!', category='error')
+        elif not data or len(data) < 5:
+            flash('Description is too short!', category='error')
+        else:
+            new_Crime = Crime(
+                title=title,
+                location=location,
+                data=data,
+                user_id=current_user.id )
+            db.session.add(new_Crime)
+
+            selected_category = Category.query.filter_by(cat_id=category_id).first()
+            if selected_category:
+                selected_category.count += 1
+                db.session.commit()
+                flash('Crime posted and category updated!', category='success')
+            else:
+                flash('Invalid category selected!', category='error')
+    
+    
+    return render_template("report_crime.html", user=current_user, crimes=crimes, categories=categories)
+@views.route('/live-map', methods=['GET', 'POST', "center_on_user"])
+@login_required
+def live_map():
+    global response, brac_location,default_location,zoom_level,searched_location,m
+    response= None
+    m.location= brac_location
+    # Add the blue marker and circle for BRAC University
+    folium.CircleMarker(
+        location=brac_location,
+        radius=10,
+        color="blue",
+        fill=True,
+        fill_color="blue",
+        fill_opacity=0.6,
+        popup="BRAC University"
+    ).add_to(m)
+    if request.method == 'POST':
+        search_query = request.form.get('location')
+
+        if search_query:
+            geolocator = Nominatim(user_agent="crime_map")
+            location = geolocator.geocode(search_query) 
+            if location:
+                searched_location = [location.latitude, location.longitude]
+        
+                folium.Marker(
+                    [location.latitude, location.longitude],
+                    popup= location.address,
+                    tooltip="Searched Location",
+                    icon=folium.Icon(color="red")
+                ).add_to(m)
+            m.location = searched_location
+            
+    elif request.method =='center_on_user':
+        clear_markers()
+        response = requests.get("https://ipinfo.io/json")
+        if response and response.status_code == 200:
+            data = response.json()
+            location = data.get("loc", "")           
+            # If the user location is provided, center the map on it
+            if location:
+                latitude, longitude = map(float, location.split(","))
+                user_location= [float(latitude), float(longitude)]
+                # Add the blue marker and circle for the user's location
+                folium.CircleMarker(
+                    location=user_location,
+                    radius=10,
+                    color="blue",
+                    fill=True,
+                    fill_color="blue",
+                    fill_opacity=0.6,
+                    popup="Your Location"
+                ).add_to(m)
+                folium.Marker(user_location, popup="Your Location", icon=folium.Icon(color="red")).add_to(m)
+                m.location = user_location
+            else:
+                # If geolocation failed or no user location is available, center map on BRAC University
+                folium.CircleMarker(
+                    location=brac_location,
+                    radius=10,
+                    color="blue",
+                    fill=True,
+                    fill_color="blue",
+                    fill_opacity=0.6,
+                    popup="BRAC University"
+                ).add_to(m)
+                folium.Marker(brac_location, popup="BRAC University", icon=folium.Icon(color="red")).add_to(m)
+                m.location = brac_location
+ 
+    map_html = m._repr_html_()
+    return render_template('live_map.html', map_html=map_html, user=current_user)
+
+def clear_markers():
+    brac_location = [23.7725, 90.4253]
+    default_location= brac_location  # Coordinates for BRAC University
+    zoom_level = 16
+    m = folium.Map(location=default_location, zoom_start=zoom_level, tiles='cartodbdark_matter')
