@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .resource-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        border-radius: 12px;
+        background-color: #f4f7fa;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .resource-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        background-color: #f9fafb;
+    }
+
+    .resource-icon {
+        font-size: 2.5rem;
+        color: #e74c3c;
+    }
+
+    .btn-call {
+        background-color: #28a745;
+        color: #fff;
+        font-size: 1rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        width: 100%;
+        margin-top: 15px;
+    }
+
+    .btn-call:hover {
+        background-color: #218838;
+        color: #fff;
+    }
+
+    .btn-resource {
+        background-color: #3498db;
+        color: #fff;
+        font-size: 1rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        width: 100%;
+        margin-top: 15px;
+    }
+
+    .btn-resource:hover {
+        background-color: #2980b9;
+        color: #fff;
+    }
+
+    .section-title {
+        color: #34495e;
+        font-weight: 700;
+        font-size: 2.2rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .section-subtitle {
+        color: #7f8c8d;
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+    }
+
+    .row {
+        margin-top: 40px;
+    }
+</style>
+
+<div class="container py-5">
+    {% if error %}
+    <div class="alert alert-danger mt-3">{{ error }}</div>
+    {% endif %}
+
+    <h1 class="section-title text-center mb-4">Law Enforcement Integration</h1>
+    <p class="section-subtitle text-center text-muted">Collaborate with law enforcement agencies to manage and analyze crime data.</p>
+
+    <!-- Important Contacts -->
+    <h3 class="text-center mb-4">Important Contacts</h3>
+    <div class="row">
+        <!-- Bangladesh Police -->
+        <div class="col-md-3 mb-4">
+            <div class="card resource-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-shield-alt resource-icon mb-3"></i>
+                    <h6 class="card-title">Bangladesh Police</h6>
+                    <a href="tel:+880123456789" class="btn btn-call btn-block mb-2"><i class="fas fa-phone"></i> Call Now</a>
+                    <p class="card-text"><a href="mailto:info@police.gov.bd">info@police.gov.bd</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rapid Action Battalion -->
+        <div class="col-md-3 mb-4">
+            <div class="card resource-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-shield resource-icon mb-3"></i>
+                    <h6 class="card-title">Rapid Action Battalion (RAB)</h6>
+                    <a href="tel:+880987654321" class="btn btn-call btn-block mb-2"><i class="fas fa-phone"></i> Call Now</a>
+                    <p class="card-text"><a href="mailto:info@rab.gov.bd">info@rab.gov.bd</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fire Service & Civil Defence -->
+        <div class="col-md-3 mb-4">
+            <div class="card resource-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-fire resource-icon mb-3"></i>
+                    <h6 class="card-title">Fire Service & Civil Defence</h6>
+                    <a href="tel:+8801122334455" class="btn btn-call btn-block mb-2"><i class="fas fa-phone"></i> Call Now</a>
+                    <p class="card-text"><a href="mailto:info@fireservice.gov.bd">info@fireservice.gov.bd</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- National Emergency Number -->
+        <div class="col-md-3 mb-4">
+            <div class="card resource-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-exclamation-triangle resource-icon mb-3"></i>
+                    <h6 class="card-title">National Emergency Number</h6>
+                    <a href="tel:999" class="btn btn-call btn-block mb-2"><i class="fas fa-phone"></i> Call 999</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Other Resources -->
+    <h3 class="text-center mb-4">Other Resources</h3>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card resource-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-laptop-code resource-icon mb-3"></i>
+                    <h6 class="card-title">Cyber Crime Unit</h6>
+                    <p class="card-text"><a href="mailto:cybercrime@police.gov.bd">cybercrime@police.gov.bd</a></p>
+                    <a href="https://www.police.gov.bd/cybercrime" class="btn btn-resource btn-block">Visit Website</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card resource-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-gavel resource-icon mb-3"></i>
+                    <h6 class="card-title">Bangladesh Legal Aid Services</h6>
+                    <p class="card-text"><a href="mailto:info@blast.org.bd">info@blast.org.bd</a></p>
+                    <a href="https://www.blast.org.bd" class="btn btn-resource btn-block">Visit Website</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<!-- Include Font Awesome for icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .resource-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        border-radius: 12px;
+        background-color: #f4f7fa;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .resource-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        background-color: #f9fafb;
+    }
+
+    .resource-icon {
+        font-size: 2.5rem;
+        color: #3498db;
+    }
+
+    .btn-resource {
+        background-color: #3498db;
+        color: #fff;
+        border: none;
+        font-size: 1rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        width: 100%;
+        margin-top: 15px;
+    }
+
+    .btn-resource:hover {
+        background-color: #2980b9;
+        color: #fff;
+    }
+
+    .section-title {
+        color: #34495e;
+        font-weight: 700;
+        font-size: 2.2rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .section-subtitle {
+        color: #7f8c8d;
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+    }
+
+    .list-group-item {
+        padding: 1rem;
+        font-size: 1rem;
+        color: #34495e;
+    }
+
+    .list-group-item:hover {
+        background-color: #ecf0f1;
+        color: #3498db;
+        cursor: pointer;
+    }
+
+    .row {
+        margin-top: 40px;
+    }
+</style>
+
+<div class="container py-5">
+    <h1 class="section-title text-center mb-4">Educational Resources</h1>
+    <p class="section-subtitle text-center text-muted">Learn about the criminal justice system and how to protect your rights.</p>
+
+    <div class="row">
+        <!-- Criminal Justice System -->
+        <div class="col-md-4 mb-4">
+            <div class="card resource-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-balance-scale resource-icon mb-3"></i>
+                    <h5 class="card-title">Criminal Justice System</h5>
+                    <p class="card-text">Understand the criminal justice system and its processes to better navigate legal situations.</p>
+                    <a href="https://www.ojp.gov" class="btn btn-resource">Office of Justice Programs</a>
+                    <a href="https://www.criminaldefenseeducation.org" class="btn btn-resource">Criminal Defense Education</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Victim Rights -->
+        <div class="col-md-4 mb-4">
+            <div class="card resource-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-shield-alt resource-icon mb-3"></i>
+                    <h5 class="card-title">Victim Rights</h5>
+                    <p class="card-text">Know your rights as a victim and learn about resources to support you in your journey to justice.</p>
+                    <a href="https://www.ncvc.org" class="btn btn-resource">National Center for Victims of Crime</a>
+                    <a href="https://www.nsvrc.org" class="btn btn-resource">National Sexual Violence Resource Center</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legal Education -->
+        <div class="col-md-4 mb-4">
+            <div class="card resource-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-book resource-icon mb-3"></i>
+                    <h5 class="card-title">Legal Education</h5>
+                    <p class="card-text">Get equipped with the knowledge to navigate the legal system and understand your rights and responsibilities.</p>
+                    <a href="https://www.lawhelp.org" class="btn btn-resource">LawHelp.org</a>
+                    <a href="https://www.legalzoom.com" class="btn btn-resource">LegalZoom</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<!-- Include Font Awesome for icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+{% endblock %}

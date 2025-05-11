@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #e6f0fa;
+        color: #2c3e50;
+    }
+
+    .resource-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .resource-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .resource-icon {
+        font-size: 3rem;
+        color: #4a90e2;
+    }
+
+    .btn-resource {
+        background-color: #4a90e2;
+        color: #fff;
+        border: none;
+        font-size: 1rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-resource:hover {
+        background-color: #357abd;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .resource-card .card-body {
+        padding: 2rem;
+    }
+
+    .resource-card .card-title {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        font-weight: 600;
+        margin-top: 1.5rem;
+    }
+
+    .resource-card .card-text {
+        font-size: 1rem;
+        color: #7f8c8d;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .resource-card {
+            margin-bottom: 1.5rem;
+        }
+
+        .resource-icon {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+
+<div class="container py-5">
+    <h1 class="section-title">Community Resources</h1>
+    <p class="text-center text-muted mb-5">Explore resources to support crime victims and at-risk individuals.</p>
+
+    <div class="row">
+        <!-- Legal Aid -->
+        <div class="col-md-4">
+            <div class="card resource-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-gavel resource-icon mb-3"></i>
+                    <h5 class="card-title">Legal Aid</h5>
+                    <p class="card-text">Free or discounted legal services for crime victims or those facing legal issues.</p>
+                    <a href="https://www.nationallegalaid.org" class="btn btn-resource btn-block mb-2">National Legal Aid</a>
+                    <a href="https://www.criminaldefenseattorneys.org" class="btn btn-resource btn-block">Criminal Defense Attorneys</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Counseling and Mental Health -->
+        <div class="col-md-4">
+            <div class="card resource-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-heart resource-icon mb-3"></i>
+                    <h5 class="card-title">Counseling & Mental Health</h5>
+                    <p class="card-text">Counseling services for victims, witnesses, and anyone needing mental health support.</p>
+                    <a href="https://www.mentalhealthresources.org" class="btn btn-resource btn-block mb-2">Mental Health Resources</a>
+                    <a href="https://www.nationalcounselingnetwork.org" class="btn btn-resource btn-block">National Counseling Network</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Shelters -->
+        <div class="col-md-4">
+            <div class="card resource-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-home resource-icon mb-3"></i>
+                    <h5 class="card-title">Emergency Shelters</h5>
+                    <p class="card-text">24/7 shelters for those in immediate danger or needing a safe place to stay.</p>
+                    <a href="https://www.nationalshelter.org" class="btn btn-resource btn-block mb-2">National Shelter</a>
+                    <a href="https://www.domesticshelters.org" class="btn btn-resource btn-block">Domestic Shelters</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<!-- Include Font Awesome for icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+{% endblock %}

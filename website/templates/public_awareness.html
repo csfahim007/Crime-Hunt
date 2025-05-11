@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #f4f6fa;
+        color: #2c3e50;
+    }
+
+    .resource-card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background-color 0.3s ease;
+        border: 1px solid #f0f1f6;
+        border-radius: 12px;
+        background-color: #f9f9f9;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .resource-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        background-color: #e6f0fa;
+    }
+
+    .resource-icon {
+        font-size: 3rem;
+        color: #4e73df;
+        transition: color 0.3s ease;
+    }
+
+    .resource-card:hover .resource-icon {
+        color: #2e59d9;
+    }
+
+    .btn-resource {
+        background-color: #4e73df;
+        color: #fff;
+        border: none;
+        font-size: 1rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 5px;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .btn-resource:hover {
+        background-color: #2e59d9;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+        color: #2c3e50;
+        font-weight: 700;
+        font-size: 2.2rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .list-group-item {
+        border: none;
+        padding: 1rem 0.5rem;
+        font-size: 1.1rem;
+        color: #555;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .list-group-item:hover {
+        background-color: #f1f1f1;
+        color: #4e73df;
+    }
+
+    .text-muted {
+        color: #888;
+        font-size: 1.1rem;
+    }
+
+    .row {
+        margin-top: 30px;
+    }
+
+    /* Animation for the cards */
+    .resource-card {
+        animation: cardAnimation 1s ease-out;
+    }
+
+    @keyframes cardAnimation {
+        0% {
+            transform: translateY(50px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .resource-card {
+            margin-bottom: 1.5rem;
+        }
+
+        .resource-icon {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+
+<div class="container py-5">
+    <h1 class="section-title">Public Awareness</h1>
+    <p class="text-center text-muted mb-4">Learn how to stay safe and help reduce crime in your community.</p>
+
+    <div class="row">
+        <!-- Crime Prevention Tips -->
+        <div class="col-md-6 mb-4">
+            <div class="card resource-card">
+                <div class="card-body">
+                    <div class="text-center">
+                        <i class="fas fa-lock resource-icon mb-3"></i>
+                        <h5 class="card-title">Crime Prevention Tips</h5>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Always lock your doors and windows when leaving home.</li>
+                        <li class="list-group-item">Be aware of your surroundings, especially in unfamiliar places.</li>
+                        <li class="list-group-item">Report any suspicious activity to local authorities.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- How You Can Help -->
+        <div class="col-md-6 mb-4">
+            <div class="card resource-card">
+                <div class="card-body">
+                    <div class="text-center">
+                        <i class="fas fa-hands-helping resource-icon mb-3"></i>
+                        <h5 class="card-title">How You Can Help</h5>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Volunteer with local organizations supporting safety programs.</li>
+                        <li class="list-group-item">Educate others about safety precautions and crime prevention.</li>
+                        <li class="list-group-item">Participate in community watch programs to stay vigilant.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<!-- Include Font Awesome for icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+{% endblock %}
