@@ -25,7 +25,7 @@ crime_locations= []
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-
+    clear_markers()
     global crime_locations, m
     m = folium.Map(location=default_location, zoom_start=zoom_level, tiles='cartodbdark_matter')
     if request.method == 'POST':
@@ -44,8 +44,67 @@ def home():
         crime.user = User.query.get(crime.user_id)
         if crime.location not in crime_locations:
             crime_locations.append(crime.location)
+    for crime_location in crime_locations:
+        if crime_location:  
+           geolocator = Nominatim(user_agent="crime_map")
+           location = geolocator.geocode(crime_location)  
+           if location:
+               searched_location = [location.latitude, location.longitude]     
+               folium.CircleMarker(
+                   location=searched_location,
+                   radius=random.randint(10,50),
+                   color="red",
+                   fill=True,
+                   fill_color="red",
+                   fill_opacity=0.2,
+                   popup= f'{crime_location}'
+               ).add_to(m)
 
     return render_template("home.html", user=current_user, crimes=crimes, categories=categories, chats=chats)
+
+@views.route('/clear_chats', methods=['POST'])
+def clear_chats():
+    if current_user.id == 1:  
+        Chat.query.delete() 
+        db.session.commit() 
+    return redirect(url_for('views.home')) 
+
+
+@views.route('/admin-tools', methods=['GET', 'POST'])
+@login_required
+def admin_tools():
+    if current_user.id != 1:
+        flash('Access denied!', category='error')
+        return redirect(url_for('views.home'))
+
+    crimes = Crime.query.all()
+    for crime in crimes:
+        crime.user = User.query.get(crime.user_id)
+    categories = Category.query.all()
+
+    if request.method == 'POST':
+ 
+        if 'add-category' in request.form:
+            name = request.form.get('category-name')
+            if Category.query.filter_by(name=name).first():
+                flash('Category already exists.', category='error')
+            else:
+                new_category = Category(name=name)
+                db.session.add(new_category)
+                db.session.commit()
+                flash('Category added successfully!', category='success')
+
+        elif 'remove-category' in request.form:
+            cat_id = request.form.get('category-id')
+            category = Category.query.get(cat_id)
+            if category:
+                db.session.delete(category)
+                db.session.commit()
+                flash('Category removed successfully!', category='success')
+            else:
+                flash('Category not found.', category='error')
+    
+    return render_template('admin_tools.html',user=current_user, crimes=crimes, categories=categories)
 
 @views.route('/stats', methods=['GET'])
 @login_required
@@ -135,6 +194,40 @@ def report_crime():
     
     
     return render_template("report_crime.html", user=current_user, crimes=crimes, categories=categories)
+
+
+@views.route('/law_enforcement', methods=['GET', 'POST'])
+@login_required
+def law_enforcement():
+    if current_user.id != 1: 
+        flash('Access denied!', category='error')
+        return redirect(url_for('views.home'))
+
+    crimes = Crime.query.all()  
+    for crime in crimes:
+        crime.user = User.query.get(crime.user_id)
+    return render_template('law_enforcement.html', user=current_user, crimes=crimes)
+
+
+@views.route('/community_resources', methods=['GET'])
+@login_required
+def community_resources():
+    return render_template('community_resources.html', user=current_user)
+
+
+@views.route('/public_awareness', methods=['GET'])
+@login_required
+def public_awareness():
+    return render_template('public_awareness.html', user=current_user)
+
+
+@views.route('/educational_resources', methods=['GET'])
+@login_required
+def educational_resources():
+    return render_template('educational_resources.html', user=current_user)
+
+
+
 @views.route('/live-map', methods=['GET', 'POST', "center_on_user"])
 @login_required
 def live_map():
