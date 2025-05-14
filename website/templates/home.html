@@ -264,6 +264,54 @@
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
     }
 
+    .volunteer-button {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(145deg, #4a90e2, #357abd);
+        color: #fff;
+        padding: 0.75rem 1.5rem;
+        border-radius: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        z-index: 1000;
+        text-decoration: none;
+    }
+
+    .volunteer-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        background: linear-gradient(145deg, #357abd, #2c5c8f);
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .report-crime-button {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(145deg, #e44d26, #f16529);
+        color: #fff;
+        padding: 1rem 2.5rem;
+        border-radius: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        font-size: 1.2rem;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        z-index: 1000;
+        text-decoration: none;
+    }
+
+    .report-crime-button:hover {
+        transform: translateX(-50%) translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        background: linear-gradient(145deg, #f16529, #e44d26);
+        color: #fff;
+        text-decoration: none;
+    }
+
     @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
@@ -332,8 +380,13 @@
     </div>
 </div>
 
-<a href="/report_crime" class="report-button" data-toggle="tooltip" title="Report a new crime">
-    Report a Crime
+<!-- Replace the existing button group with these individual buttons -->
+<a href="/report_crime" class="report-crime-button" data-toggle="tooltip" title="Report a new crime">
+    <i class="fas fa-exclamation-triangle"></i> Report a Crime
+</a>
+
+<a href="/volunteer_signup" class="volunteer-button" data-toggle="tooltip" title="Sign up to be a volunteer">
+    <i class="fas fa-hands-helping"></i> Volunteer Signup
 </a>
 
 <!-- Modal -->

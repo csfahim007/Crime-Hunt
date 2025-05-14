@@ -41,3 +41,12 @@ class Location(db.Model):
 
     def __repr__(self):
         return f'<Crime {self.title}>'
+
+class Volunteer(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150))
+    email = db.Column(db.String(150))
+    phone = db.Column(db.String(20))
+    location = db.Column(db.String(150))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    date_created = db.Column(db.DateTime(timezone=True), default=func.now())

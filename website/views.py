@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from .models import Crime, User, Category, Chat
+from .models import Crime, User, Category, Chat, Volunteer
 from . import db
 from datetime import datetime
 from collections import defaultdict
@@ -232,7 +232,7 @@ def educational_resources():
 @login_required
 def live_map():
     global response, brac_location,default_location,zoom_level,searched_location,m
-    response= None
+    response = None
     m.location= brac_location
     # Add the blue marker and circle for BRAC University
     folium.CircleMarker(
@@ -305,3 +305,29 @@ def clear_markers():
     default_location= brac_location  # Coordinates for BRAC University
     zoom_level = 16
     m = folium.Map(location=default_location, zoom_start=zoom_level, tiles='cartodbdark_matter')
+
+@views.route('/volunteer_signup', methods=['GET', 'POST'])
+@login_required
+def volunteer_signup():
+    if request.method == 'POST':
+        phone = request.form.get('phone')
+        location = request.form.get('location')
+        
+        if not phone or len(phone) < 10:
+            flash('Invalid phone number!', category='error')
+        elif not location or len(location) < 3:
+            flash('Location is too short!', category='error')
+        else:
+            new_volunteer = Volunteer(
+                name=current_user.first_name,
+                email=current_user.email,
+                phone=phone,
+                location=location,
+                user_id=current_user.id
+            )
+            db.session.add(new_volunteer)
+            db.session.commit()
+            flash('Volunteer application sent successfully!', category='success')
+            return redirect(url_for('views.home'))
+
+    return render_template("volunteer_signup.html", user=current_user)
