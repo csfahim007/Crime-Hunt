@@ -247,7 +247,7 @@
     </div>
 
     <div class="stats-container">
-        <h3>Crime Reports</h3>
+        <h3>Filtered Crime Reports</h3>
         <table class="stats-table">
             <thead>
                 <tr>
@@ -262,7 +262,7 @@
                     <tr>
                         <td>{{ crime.title }}</td>
                         <td>{{ crime.location }}</td>
-                        <td>{{ crime.date }}</td>
+                        <td>{{ crime.date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                         <td>{{ crime.data }}</td>
                     </tr>
                 {% endfor %}

@@ -36,20 +36,20 @@ def home():
         if crime.location and crime.location not in crime_locations:
             crime_locations.append(crime.location)
             
-    for crime_location in crime_locations:
-        if crime_location:
-            location = safe_geocode(crime_location)
-            if location:
-                searched_location = [location.latitude, location.longitude]     
-                folium.CircleMarker(
-                    location=searched_location,
-                    radius=random.randint(10,50),
-                    color="red",
-                    fill=True,
-                    fill_color="red",
-                    fill_opacity=0.2,
-                    popup=f'{crime_location}'
-                ).add_to(m)
+    # for crime_location in crime_locations:
+    #     if crime_location:
+    #         location = safe_geocode(crime_location)
+    #         if location:
+    #             searched_location = [location.latitude, location.longitude]     
+    #             folium.CircleMarker(
+    #                 location=searched_location,
+    #                 radius=random.randint(10,50),
+    #                 color="red",
+    #                 fill=True,
+    #                 fill_color="red",
+    #                 fill_opacity=0.2,
+    #                 popup=f'{crime_location}'
+    #             ).add_to(m)
 
     return render_template("home.html", 
                           user=current_user, 
@@ -286,7 +286,8 @@ def stats():
         if (start_date <= crime.date <= end_date) and (location_filter == '' or crime.location == location_filter)
     ]
 
-    location_counts = Counter([crime.location for crime in crimes])
+    # Calculate counts only from filtered crimes
+    location_counts = Counter([crime.location for crime in filtered_crimes])
     locations = list(location_counts.keys())
     counts = list(location_counts.values())
 
@@ -297,7 +298,7 @@ def stats():
         location_filter=location_filter,
         crime_count=len(filtered_crimes),
         location_counts=location_counts,
-        crimes=crimes)
+        crimes=filtered_crimes)  # Changed from crimes to filtered_crimes
 
 @views.route('/delete-crime/<int:crime_id>', methods=['POST'])
 @login_required
