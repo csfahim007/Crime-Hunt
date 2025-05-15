@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Events{% endblock %}
+
+{% block content %}
+<style>
+    .events-container {
+        max-width: 80%;
+        margin: 2rem auto;
+        padding: 1rem;
+        animation: fadeIn 0.5s ease;
+    }
+    .main-title {
+        text-align: center;
+        font-size: 3rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, #2c3e50, #4a90e2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 2rem;
+    }
+    .event-card {
+        background: linear-gradient(145deg, #ffffff, #e6f0fa);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 1.5rem;
+    }
+    .event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    .event-card h5 {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+    .event-card p {
+        font-size: 0.95rem;
+        color: #555;
+        margin-bottom: 0.5rem;
+    }
+    .event-card form {
+        margin-top: 0.5rem;
+    }
+    .event-card .btn {
+        background: #28a745;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .event-card .btn:hover {
+        background: #218838;
+        transform: translateY(-2px);
+    }
+    .event-card .btn::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.3s ease, height 0.3s ease;
+    }
+    .event-card .btn:active::after {
+        width: 200px;
+        height: 200px;
+    }
+    @media (max-width: 768px) {
+        .events-container {
+            max-width: 100%;
+            margin: 1rem;
+        }
+        .event-card .btn {
+            width: 100%;
+        }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+
+<div class="events-container">
+    <h1 class="main-title">Events</h1>
+    
+    {% if user.id == 1 %}
+    <div class="mb-4">
+        <a href="{{ url_for('views.create_event') }}" class="btn btn-primary">Create New Event</a>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        {% for event in events %}
+        <div class="col-12 col-md-4 mb-4">
+            <div class="event-card">
+                <h5 class="card-title">{{ event.title }}</h5>
+                <p class="card-text">{{ event.description }}</p>
+                <p><strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p><strong>Location:</strong> {{ event.location }}</p>
+                <form action="{{ url_for('views.join_event', event_id=event.id) }}" method="POST">
+                    <button type="submit" class="btn btn-success">Join Event</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<!-- Add join_event AJAX if needed in the future -->
+{% endblock %}

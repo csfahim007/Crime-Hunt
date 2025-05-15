@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Event{% endblock %}
+
+{% block content %}
+<style>
+    .edit-event-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1rem;
+        animation: slideIn 0.5s ease;
+    }
+    .edit-event-card {
+        background: linear-gradient(145deg, #ffffff, #e6f0fa);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+    .edit-event-card:hover {
+        transform: translateY(-5px);
+    }
+    .main-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        background: linear-gradient(90deg, #2c3e50, #4a90e2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1.5rem;
+    }
+    .edit-event-card label {
+        font-weight: 500;
+        color: #2c3e50;
+    }
+    .edit-event-card input, .edit-event-card textarea {
+        width: 100%;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        border: 1px solid #d1d9e6;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        background: #fff;
+    }
+    .edit-event-card .btn {
+        background: #4a90e2;
+        color: #fff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .edit-event-card .btn:hover {
+        background: #357abd;
+        transform: translateY(-2px);
+    }
+    .edit-event-card .btn::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.3s ease, height 0.3s ease;
+    }
+    .edit-event-card .btn:active::after {
+        width: 200px;
+        height: 200px;
+    }
+    @media (max-width: 768px) {
+        .edit-event-container {
+            margin: 1rem;
+        }
+        .edit-event-card {
+            padding: 1rem;
+        }
+    }
+    @keyframes slideIn {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+</style>
+
+<div class="edit-event-container">
+    <div class="edit-event-card">
+        <h1 class="main-title">Edit Event</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" class="form-control" id="title" name="title" value="{{ event.title }}" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="5" required>{{ event.description }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="date">Date and Time</label>
+                <input type="datetime-local" class="form-control" id="date" name="date" value="{{ event.date.strftime('%Y-%m-%dT%H:%M') }}" required>
+            </div>
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" class="form-control" id="location" name="location" value="{{ event.location }}" required>
+            </div>
+            <div class="form-group">
+                <label for="max_participants">Maximum Participants</label>
+                <input type="number" class="form-control" id="max_participants" name="max_participants" value="{{ event.max_participants }}" min="1" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Event</button>
+            <a href="{{ url_for('views.manage_events') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

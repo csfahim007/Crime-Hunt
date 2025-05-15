@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Event Details{% endblock %}
+
+{% block content %}
+<style>
+    .event-detail-container {
+        max-width: 80%;
+        margin: 2rem auto;
+        padding: 1rem;
+        animation: slideIn 0.5s ease;
+    }
+    .event-detail-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #e0e0e0;
+    }
+    .event-detail-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    }
+    .event-detail-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: #4a90e2;
+        transition: width 0.3s ease;
+    }
+    .event-detail-card:hover::before {
+        width: 8px;
+    }
+    .main-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+    }
+    .event-detail-card p {
+        font-size: 1rem;
+        color: #666666;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+    .event-detail-card .btn, .interest-button {
+        background: #4a90e2;
+        color: #ffffff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        font-weight: 500;
+    }
+    .event-detail-card .btn:hover, .interest-button:hover {
+        background: #357abd;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .event-detail-card .btn::after, .interest-button::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.3s ease, height 0.3s ease;
+    }
+    .event-detail-card .btn:active::after, .interest-button:active::after {
+        width: 200px;
+        height: 200px;
+    }
+    .interest-button.btn-danger {
+        background: #dc3545;
+    }
+    .interest-button.btn-danger:hover {
+        background: #c82333;
+    }
+    @media (max-width: 768px) {
+        .event-detail-container {
+            max-width: 100%;
+            margin: 1rem;
+        }
+        .event-detail-card .btn, .interest-button {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+    @keyframes slideIn {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+
+<div class="event-detail-container">
+    <div class="event-detail-card">
+        <h1 class="main-title">{{ event.title }}</h1>
+        <p><strong>Description:</strong> {{ event.description }}</p>
+        <p><strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
+        <p><strong>Location:</strong> {{ event.location }}</p>
+        <p><strong>Available Seats:</strong> {{ event.max_participants - event.participants|length }} / {{ event.max_participants }}</p>
+        <p><strong>Created by:</strong> {{ event.created_by_user.first_name if event.created_by_user else 'Unknown' }}</p>
+        {% if user.id == 1 %}
+        <p><strong>Total Interested Participants:</strong> {{ event.max_participants - (event.max_participants - event.participants|length) }}</p>
+        {% endif %}
+
+        {% if not user.id == 1 %}
+            <button class="interest-button {{ 'btn-danger' if is_interested else 'btn-success' }}"
+                    data-event-id="{{ event.id }}"
+                    data-interest="{{ 'true' if is_interested else 'false' }}">
+                {{ 'Remove Interest' if is_interested else 'Show Interest' }}
+            </button>
+        {% endif %}
+
+        <a href="{{ url_for('views.upcoming_events') }}" class="btn mt-3">Back to Events</a>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('.interest-button').click(function() {
+            var button = $(this);
+            var eventId = button.data('event-id');
+            
+            $.ajax({
+                url: '/show-interest/' + eventId,
+                type: 'POST',
+                success: function(response) {
+                    if(response.message.includes('Showed')) {
+                        button.removeClass('btn-success').addClass('btn-danger');
+                        button.text('Remove Interest');
+                        button.data('interest', 'true');
+                    } else {
+                        button.removeClass('btn-danger').addClass('btn-success');
+                        button.text('Show Interest');
+                        button.data('interest', 'false');
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error: ' + xhr.responseJSON.error);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

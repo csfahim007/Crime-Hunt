@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Event{% endblock %}
+
+{% block content %}
+<style>
+    .create-event-container {
+        max-width: 80%;
+        margin: 2rem auto;
+        padding: 1rem;
+        animation: slideIn 0.5s ease;
+    }
+    .create-event-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #e0e0e0;
+    }
+    .create-event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    }
+    .create-event-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: #4a90e2;
+        transition: width 0.3s ease;
+    }
+    .create-event-card:hover::before {
+        width: 8px;
+    }
+    .main-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-group label {
+        font-size: 1.1rem;
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        background: #f8f9fa;
+        color: #333333;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+        outline: none;
+        border-color: #4a90e2;
+        box-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
+    }
+    .form-group textarea {
+        resize: vertical;
+    }
+    .btn-primary, .btn-secondary {
+        background: #4a90e2;
+        color: #ffffff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        font-weight: 500;
+        margin-right: 0.5rem;
+    }
+    .btn-secondary {
+        background: #6c757d;
+    }
+    .btn-primary:hover, .btn-secondary:hover {
+        background: #357abd;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+    .btn-primary::after, .btn-secondary::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.3s ease, height 0.3s ease;
+    }
+    .btn-primary:active::after, .btn-secondary:active::after {
+        width: 200px;
+        height: 200px;
+    }
+    @media (max-width: 768px) {
+        .create-event-container {
+            max-width: 100%;
+            margin: 1rem;
+        }
+        .btn-primary, .btn-secondary {
+            width: 100%;
+            margin-bottom: 0.5rem;
+            margin-right: 0;
+        }
+    }
+    @keyframes slideIn {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+
+<div class="create-event-container">
+    <div class="create-event-card">
+        <h2 class="main-title">Create New Event</h2>
+        <form method="POST">
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="5" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="date">Date and Time</label>
+                <input type="datetime-local" class="form-control" id="date" name="date" required>
+            </div>
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" class="form-control" id="location" name="location" required>
+            </div>
+            <div class="form-group">
+                <label for="max_participants">Maximum Participants</label>
+                <input type="number" class="form-control" id="max_participants" name="max_participants" min="1" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Event</button>
+            <a href="{{ url_for('views.manage_events') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

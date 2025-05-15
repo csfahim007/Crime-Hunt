@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block title %}Upcoming Events{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-image: url("{{ url_for('static', filename='images/background.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        color: #2c3e50;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.6;
+    }
+
+    .events-container {
+        max-width: 80%;
+        margin: 2rem auto;
+        padding: 1rem;
+        animation: fadeIn 0.5s ease;
+        margin-left: 10%;
+    }
+
+    .main-title {
+        font-size: 3.8rem;
+        font-weight: 700;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        background: linear-gradient(90deg, #343702, #fafbfb, #1a011a);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 2rem 0;
+        animation: fadeIn 1s ease;
+        max-width: 80%;
+        margin-left: 10%;
+    }
+
+    .event-card {
+        background: linear-gradient(145deg, #285484, #3a7d55, #99891e);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 1.5rem;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .event-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .event-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(180deg, #ee8a30, #f0a363);
+        transition: width 0.3s ease;
+    }
+
+    .event-card:hover::before {
+        width: 10px;
+    }
+
+    .event-card h5 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+
+    .event-card p {
+        font-size: 0.95rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .event-card .btn, .interest-button {
+        background: #ffffff;
+        color: #ee8a30;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        margin-right: 0.5rem;
+    }
+
+    .event-card .btn:hover, .interest-button:hover {
+        background: #70869b;
+        color: #fff;
+    }
+
+    .event-card .btn::after, .interest-button::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.3s ease, height 0.3s ease;
+    }
+
+    .event-card .btn:active::after, .interest-button:active::after {
+        width: 200px;
+        height: 200px;
+    }
+
+    .interest-button.btn-danger {
+        background: #c10e71;
+        color: #fff;
+    }
+
+    .alert-info {
+        background: linear-gradient(145deg, #e6f0fa, #b126ed);
+        color: #fff;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .back-button {
+        display: block;
+        text-align: center;
+        background: linear-gradient(145deg, #33708e, #5e2284);
+        color: #fff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        max-width: 200px;
+        margin: 2rem auto;
+        text-decoration: none;
+    }
+
+    .back-button:hover {
+        background: linear-gradient(145deg, #357abd, #2c3e50);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .back-button::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.3s ease, height 0.3s ease;
+    }
+
+    .back-button:active::after {
+        width: 200px;
+        height: 200px;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+        .events-container {
+            max-width: 100%;
+            margin: 1rem;
+            margin-left: 0;
+        }
+        .main-title {
+            font-size: 2.5rem;
+            margin-left: 0;
+            max-width: 100%;
+        }
+        .event-card .btn, .interest-button {
+            width: 100%;
+            margin-bottom: 0.5rem;
+            margin-right: 0;
+        }
+    }
+</style>
+
+<div class="events-container">
+    <h1 class="main-title">Upcoming Events</h1>
+    
+    {% if events %}
+        <div class="row">
+            {% for event in events %}
+                <div class="col-12 col-md-6 mb-4">
+                    <div class="event-card">
+                        <h5 class="card-title">{{ event.title }}</h5>
+                        <p class="card-text">{{ event.description|truncate(100) }}</p>
+                        <div class="event-details">
+                            <p><strong>Max Participants:</strong> {{ event.max_participants }}</p>
+                        </div>
+                        <a href="{{ url_for('views.view_event', event_id=event.id) }}" class="btn btn-primary">View Details</a>
+                        
+                        {% if not user.id == 1 %}
+                            <button class="interest-button {{ 'btn-danger' if event.is_interested else 'btn-success' }}" 
+                                    data-event-id="{{ event.id }}"
+                                    data-interest="{{ 'true' if event.is_interested else 'false' }}">
+                                {{ 'Remove Interest' if event.is_interested else 'Show Interest' }}
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            No upcoming events at this time. Check back later!
+        </div>
+    {% endif %}
+    
+    <a href="{{ url_for('views.home') }}" class="back-button">Back to Home</a>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    $(document).ready(function() {
+        $('.interest-button').click(function() {
+            var button = $(this);
+            var eventId = button.data('event-id');
+            
+            $.ajax({
+                url: '/show-interest/' + eventId,
+                type: 'POST',
+                success: function(response) {
+                    if(response.message.includes('Showed')) {
+                        button.removeClass('btn-success').addClass('btn-danger');
+                        button.text('Remove Interest');
+                        button.data('interest', 'true');
+                    } else {
+                        button.removeClass('btn-danger').addClass('btn-success');
+                        button.text('Show Interest');
+                        button.data('interest', 'false');
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error: ' + xhr.responseJSON.error);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
