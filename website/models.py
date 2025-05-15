@@ -82,3 +82,42 @@ class Feedback(db.Model):
 
     def __repr__(self):
         return f'<Feedback {self.text[:20]}>'
+    
+# Add to models.py
+
+# class Contribution(db.Model):
+#     __tablename__ = 'contribution'
+#     id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+#     activity_type = db.Column(db.String(50), nullable=False)  # e.g., 'crime_report', 'volunteer_signup', 'event_interest'
+#     score = db.Column(db.Integer, default=1, nullable=False)
+#     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
+#     user = db.relationship('User', backref=db.backref('contributions', lazy=True))
+
+#     def __repr__(self):
+#         return f'<Contribution {self.activity_type} for User {self.user_id}>'
+
+class Contribution(db.Model):
+    __tablename__ = 'contribution'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    activity_type = db.Column(db.String(50), nullable=False)
+    score = db.Column(db.Integer, default=1, nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))  # Add this line
+    created_at = db.Column(db.DateTime(timezone=True), default=func.now())
+    user = db.relationship('User', backref=db.backref('contributions', lazy=True))
+    event = db.relationship('Event')  # Add relationship to Event
+
+    def __repr__(self):
+        return f'<Contribution {self.activity_type} for User {self.user_id}>'
+    
+class AppreciationMessage(db.Model):
+    __tablename__ = 'appreciation_message'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), default=func.now())
+    user = db.relationship('User', backref=db.backref('appreciation_messages', lazy=True))
+
+    def __repr__(self):
+        return f'<AppreciationMessage for User {self.user_id}>'

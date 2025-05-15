@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    
+
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
@@ -181,63 +181,69 @@
     </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg">
-      <a class="navbar-brand" href="/" data-toggle="tooltip" title="CrimeMap Homepage">CrimeMap</a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbar"
-        aria-controls="navbar"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon">☰</span>
-      </button>
+   <!-- Replace the existing navbar in base.html with this updated version -->
+<nav class="navbar navbar-expand-lg">
+  <a class="navbar-brand" href="/" data-toggle="tooltip" title="CrimeMap Homepage">CrimeMap</a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbar"
+    aria-controls="navbar"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon">☰</span>
+  </button>
 
-      <div class="collapse navbar-collapse" id="navbar">
-        <ul class="navbar-nav ml-auto">
-          {% if current_user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link" id="home" href="/" data-toggle="tooltip" title="Go to homepage">Home</a>
-            </li>
-            {% if user.id == 1 %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('views.manage_events') }}">Manage Events</a>
-            </li>
-            {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('views.upcoming_events') }}">
-                Events
-                {% if upcoming_events > 0 %}
-                <span class="badge badge-danger">{{ upcoming_events }}</span>
-                {% endif %}
-              </a>
-            </li>
+  <div class="collapse navbar-collapse" id="navbar">
+    <ul class="navbar-nav ml-auto">
+      {% if current_user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" id="home" href="/" data-toggle="tooltip" title="Go to homepage">Home</a>
+        </li>
+        {% if user.id == 1 %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('views.manage_events') }}">Manage Events</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('views.admin_contributions') }}">Contributions</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('views.upcoming_events') }}">
+            Events
+            {% if upcoming_events > 0 %}
+            <span class="badge badge-danger">{{ upcoming_events }}</span>
             {% endif %}
-            {% if user.id == 1 %}
-            <li class="nav-item">
-              <a class="nav-link" id="admin-tools" href="/admin-tools" data-toggle="tooltip" title="Access admin tools">Tools</a>
-            </li>
-            {% endif %}
-            <li class="nav-item">
-              <a class="nav-link" id="live-map" href="{{ url_for('views.live_map') }}" data-toggle="tooltip" title="View live crime map">LiveMap</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="logout" href="/logout" data-toggle="tooltip" title="Sign out">Logout</a>
-            </li>
-          {% else %}
-            <li class="nav-item">
-              <a class="nav-link" id="login" href="/login" data-toggle="tooltip" title="Sign in to your account">Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="signUp" href="/sign-up" data-toggle="tooltip" title="Create a new account">Sign Up</a>
-            </li>
-          {% endif %}
-        </ul>
-      </div>
-    </nav>
-
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('views.user_contributions') }}">My Contributions</a>
+        </li>
+        {% endif %}
+        {% if user.id == 1 %}
+        <li class="nav-item">
+          <a class="nav-link" id="admin-tools" href="/admin-tools" data-toggle="tooltip" title="Access admin tools">Tools</a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a class="nav-link" id="live-map" href="{{ url_for('views.live_map') }}" data-toggle="tooltip" title="View live crime map">LiveMap</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="logout" href="/logout" data-toggle="tooltip" title="Sign out">Logout</a>
+        </li>
+      {% else %}
+        <li class="nav-item">
+          <a class="nav-link" id="login" href="/login" data-toggle="tooltip" title="Sign in to your account">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="signUp" href="/sign-up" data-toggle="tooltip" title="Create a new account">Sign Up</a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     <div class="container mt-3">

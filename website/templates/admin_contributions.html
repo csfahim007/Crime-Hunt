@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% block title %}Admin Contributions{% endblock %}
+{% block content %}
+<style>
+    body {
+        background: #1a1a2e;
+        color: #e0e0e0;
+        font-family: 'Roboto', sans-serif;
+        min-height: 100vh;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
+    }
+    .container {
+        flex: 1;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+    .header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    .header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(90deg, #00d4ff, #ff4b1f);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .top-scorers-section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+        padding: 2rem 0;
+    }
+    .top-scorers-card {
+        background: #2a2a3e;
+        border-radius: 15px;
+        padding: 2rem;
+        max-width: 600px;
+        width: 100%;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
+    }
+    .top-scorers-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    }
+    .top-scorers-card h3 {
+        font-size: 1.5rem;
+        color: #fff;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background: linear-gradient(90deg, #00d4ff, #ff4b1f);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .top-scorers {
+        list-style: none;
+        padding: 0;
+    }
+    .top-scorers li {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        color: #e0e0e0;
+        padding: 0.5rem;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        transition: background 0.3s ease;
+    }
+    .top-scorers li:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    .top-scorers li a {
+        color: #00d4ff;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+    .top-scorers li a:hover {
+        color: #ff4b1f;
+        text-decoration: underline;
+    }
+    .form-card {
+        background: #2a2a3e;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 2rem;
+    }
+    .form-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+    }
+    .form-card h3 {
+        font-size: 1.5rem;
+        color: #fff;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        background: #33334d;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: #e0e0e0;
+        font-size: 1rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: #00d4ff;
+        box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+        outline: none;
+    }
+    label {
+        display: block;
+        font-size: 1rem;
+        color: #e0e0e0;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    .btn-primary {
+        display: inline-block;
+        padding: 0.75rem 2rem;
+        background: linear-gradient(90deg, #00d4ff, #ff4b1f);
+        border: none;
+        border-radius: 25px;
+        color: #fff;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .no-data {
+        text-align: center;
+        color: #a0a0a0;
+        font-size: 1.2rem;
+        padding: 2rem;
+    }
+    @media (max-width: 768px) {
+        .container {
+            padding: 1.5rem 1rem;
+        }
+        .header h1 {
+            font-size: 2rem;
+        }
+        .top-scorers-card {
+            padding: 1.5rem;
+        }
+        .top-scorers-card h3 {
+            font-size: 1.3rem;
+        }
+        .top-scorers li {
+            font-size: 1rem;
+        }
+        .form-card {
+            padding: 1.5rem;
+        }
+        .btn-primary {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="header">
+        <h1>User Contributions</h1>
+    </div>
+
+    <div class="top-scorers-section">
+        <div class="top-scorers-card">
+            <h3>Top 3 Scorers</h3>
+            {% if top_scorers %}
+            <ol class="top-scorers">
+                {% for scorer in top_scorers %}
+                <li>
+                    <a href="{{ url_for('views.view_user_contributions', user_id=scorer.id) }}">
+                        {{ scorer.first_name }}
+                    </a> - Score: {{ scorer.total_score }}
+                </li>
+                {% endfor %}
+            </ol>
+            {% else %}
+            <p class="no-data">No contributions recorded yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="form-card">
+        <h3>Send Appreciation Message</h3>
+        <form method="POST">
+            <div class="form-group">
+                <label for="user_id">Select User</label>
+                <select name="user_id" class="form-control" required>
+                    <option value="">Select a user</option>
+                    {% for user in users_with_contributions %}
+                    <option value="{{ user.id }}">{{ user.first_name }} (Score: {{ user.total_score }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea name="message" class="form-control" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn-primary">Send Message</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

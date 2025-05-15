@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Contributions for {{ target_user.first_name }}{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="gradient-text">Contributions for {{ target_user.first_name }}</h1>
+    <h3>Total Score: {{ total_score }}</h3>
+    {% if contributions %}
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Activity</th>
+                <th>Score</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for contribution in contributions %}
+            <tr>
+                <td>{{ contribution.activity_type | replace('_', ' ') | title }}</td>
+                <td>{{ contribution.score }}</td>
+                <td>{{ contribution.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No contributions for this user.</p>
+    {% endif %}
+    <a href="{{ url_for('views.admin_contributions') }}" class="btn btn-secondary">Back to Admin Contributions</a>
+</div>
+{% endblock %}

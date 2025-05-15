@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}My Contributions{% endblock %}
+{% block content %}
+<style>
+    body {
+        background: #1a1a2e;
+        color: #e0e0e0;
+        font-family: 'Roboto', sans-serif;
+        min-height: 100vh;
+        margin: 0;
+    }
+    .container {
+        max-width: 1100px;
+        margin: 3rem auto;
+        padding: 0 1.5rem;
+    }
+    .header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    .header h1 {
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(90deg, #00d4ff, #ff4b1f);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
+    }
+    .header h3 {
+        font-size: 1.5rem;
+        color: #00d4ff;
+        margin: 0.5rem 0;
+    }
+    .card {
+        background: #2a2a3e;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+    }
+    .card h4 {
+        font-size: 1.3rem;
+        color: #fff;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #33334d;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .table th, .table td {
+        padding: 1rem;
+        text-align: left;
+        color: #e0e0e0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .table th {
+        background: #00d4ff;
+        color: #1a1a2e;
+        font-weight: 600;
+    }
+    .table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    .message-list {
+        list-style: none;
+        padding: 0;
+    }
+    .message-item {
+        background: #33334d;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
+    }
+    .message-item:hover {
+        transform: translateY(-3px);
+    }
+    .message-item p {
+        margin: 0;
+        color: #e0e0e0;
+        font-size: 1rem;
+    }
+    .message-item small {
+        color: #a0a0a0;
+        font-size: 0.85rem;
+    }
+    .no-data {
+        text-align: center;
+        color: #a0a0a0;
+        font-size: 1.2rem;
+        padding: 2rem;
+    }
+    @media (max-width: 768px) {
+        .container {
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+        }
+        .header h1 {
+            font-size: 2rem;
+        }
+        .header h3 {
+            font-size: 1.2rem;
+        }
+        .table th, .table td {
+            font-size: 0.9rem;
+            padding: 0.75rem;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="header">
+        <h1>My Contributions</h1>
+        <h3>Total Score: {{ total_score }}</h3>
+    </div>
+
+    <div class="card">
+        <h4>Contribution History</h4>
+        {% if contributions %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Activity</th>
+                    <th>Score</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contribution in contributions %}
+                <tr>
+                    <td>{{ contribution.activity_type | replace('_', ' ') | title }}</td>
+                    <td>{{ contribution.score }}</td>
+                    <td>{{ contribution.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="no-data">No contributions yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h4>Appreciation Messages</h4>
+        {% if messages %}
+        <ul class="message-list">
+            {% for message in messages %}
+            <li class="message-item">
+                <p>{{ message.message }}</p>
+                <small>Sent on {{ message.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="no-data">No appreciation messages received.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

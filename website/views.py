@@ -9,6 +9,8 @@ import folium
 from geopy.geocoders import Nominatim
 import requests
 import random
+from sqlalchemy import func as sql_func
+from .models import Contribution, AppreciationMessage
 
 views = Blueprint('views', __name__)
 
@@ -141,27 +143,6 @@ def view_event(event_id):
     ).first() is not None
     return render_template('view_event.html', event=event, user=current_user, is_interested=is_interested)
 
-@views.route('/show-interest/<int:event_id>', methods=['POST'])
-@login_required
-def show_interest(event_id):
-    if current_user.id == 1:
-        return jsonify({'error': 'Admin cannot show interest in events'}), 400
-        
-    existing = EventParticipant.query.filter_by(
-        event_id=event_id, 
-        user_id=current_user.id
-    ).first()
-    
-    if existing:
-        db.session.delete(existing)
-        message = 'Removed interest from event'
-    else:
-        participant = EventParticipant(event_id=event_id, user_id=current_user.id)
-        db.session.add(participant)
-        message = 'Showed interest in event'
-    
-    db.session.commit()
-    return jsonify({'message': message})
 
 @views.route('/event-participants/<int:event_id>')
 @login_required
@@ -316,6 +297,42 @@ def delete_crime(crime_id):
         flash('Crime not found.', category='error')
     return redirect(url_for('views.admin_tools'))  
 
+# @views.route('/report_crime', methods=['GET', 'POST'])
+# @login_required
+# def report_crime():
+#     crimes = Crime.query.all()
+#     categories = Category.query.all()
+#     if request.method == 'POST': 
+#         title = request.form.get('Title')  
+#         location = request.form.get('Location')  
+#         data = request.form.get('Description')  
+#         category_id = request.form.get('category-id')  
+
+#         if not title or len(title) < 3:
+#             flash('Title is too short!', category='error')
+#         elif not location or len(location) < 3:
+#             flash('Location is too short!', category='error')
+#         elif not data or len(data) < 5:
+#             flash('Description is too short!', category='error')
+#         else:
+#             new_crime = Crime(
+#                 title=title,
+#                 location=location,
+#                 data=data,
+#                 user_id=current_user.id
+#             )
+#             db.session.add(new_crime)
+
+#             selected_category = Category.query.filter_by(cat_id=category_id).first()
+#             if selected_category:
+#                 selected_category.count += 1
+#                 db.session.commit()
+#                 flash('Crime posted and category updated!', category='success')
+#             else:
+#                 flash('Invalid category selected!', category='error')
+    
+#     return render_template("report_crime.html", user=current_user, crimes=crimes, categories=categories)
+
 @views.route('/report_crime', methods=['GET', 'POST'])
 @login_required
 def report_crime():
@@ -342,6 +359,14 @@ def report_crime():
             )
             db.session.add(new_crime)
 
+            # Track contribution for crime report
+            contribution = Contribution(
+                user_id=current_user.id,
+                activity_type='crime_report',
+                score=1
+            )
+            db.session.add(contribution)
+
             selected_category = Category.query.filter_by(cat_id=category_id).first()
             if selected_category:
                 selected_category.count += 1
@@ -351,6 +376,7 @@ def report_crime():
                 flash('Invalid category selected!', category='error')
     
     return render_template("report_crime.html", user=current_user, crimes=crimes, categories=categories)
+
 
 @views.route('/law_enforcement', methods=['GET', 'POST'])
 @login_required
@@ -409,6 +435,90 @@ def safe_geocode(location_str, attempts=3, timeout=5):
             print(f"Geocoding error for {location_str}: {str(e)}")
             continue
     return None
+
+# @views.route('/show_interest/<int:event_id>', methods=['POST'])
+# @login_required
+# def show_interest(event_id):
+#     if current_user.id == 1:
+#         return jsonify({'error': 'Admin cannot show interest in events'}), 400
+        
+#     existing = EventParticipant.query.filter_by(
+#         event_id=event_id, 
+#         user_id=current_user.id
+#     ).first()
+    
+#     if existing:
+#         db.session.delete(existing)
+#         message = 'Removed interest from event'
+#         # Remove contribution
+#         Contribution.query.filter_by(
+#             user_id=current_user.id,
+#             activity_type='event_interest',
+#             event_id=event_id
+#         ).delete()
+#     else:
+#         participant = EventParticipant(event_id=event_id, user_id=current_user.id)
+#         db.session.add(participant)
+#         # Add contribution - remove event_id if not needed
+#         contribution = Contribution(
+#             user_id=current_user.id,
+#             activity_type='event_interest',
+#             score=1
+#         )
+#         db.session.add(contribution)
+#         message = 'Showed interest in event'
+    
+#     db.session.commit()
+#     return jsonify({
+#         'message': message,
+#         'is_interested': existing is None
+#     })
+
+@views.route('/show_interest/<int:event_id>', methods=['POST'])
+@login_required
+def show_interest(event_id):
+    if current_user.id == 1:
+        return jsonify({'error': 'Admin cannot show interest in events'}), 400
+        
+    existing = EventParticipant.query.filter_by(
+        event_id=event_id, 
+        user_id=current_user.id
+    ).first()
+    
+    if existing:
+        db.session.delete(existing)
+        message = 'Removed interest from event'
+        # Remove contribution
+        Contribution.query.filter_by(
+            user_id=current_user.id,
+            activity_type='event_interest',
+            event_id=event_id
+        ).delete()
+    else:
+        participant = EventParticipant(event_id=event_id, user_id=current_user.id)
+        db.session.add(participant)
+        # Check if user already has a contribution for this event
+        prior_contribution = Contribution.query.filter_by(
+            user_id=current_user.id,
+            activity_type='event_interest',
+            event_id=event_id
+        ).first()
+        if not prior_contribution:
+            # Add contribution only if no prior contribution exists
+            contribution = Contribution(
+                user_id=current_user.id,
+                activity_type='event_interest',
+                score=1,
+                event_id=event_id  # Include event_id to track unique event contributions
+            )
+            db.session.add(contribution)
+        message = 'Showed interest in event'
+    
+    db.session.commit()
+    return jsonify({
+        'message': message,
+        'is_interested': existing is None
+    })
 
 @views.route('/live-map', methods=['GET', 'POST'])
 @login_required
@@ -503,6 +613,32 @@ def live_map():
     map_html = m._repr_html_()
     return render_template('live_map.html', map_html=map_html, user=current_user)
 
+# @views.route('/volunteer_signup', methods=['GET', 'POST'])
+# @login_required
+# def volunteer_signup():
+#     if request.method == 'POST':
+#         phone = request.form.get('phone')
+#         location = request.form.get('location')
+        
+#         if not phone or len(phone) < 10:
+#             flash('Invalid phone number!', category='error')
+#         elif not location or len(location) < 3:
+#             flash('Location is too short!', category='error')
+#         else:
+#             new_volunteer = Volunteer(
+#                 name=current_user.first_name,
+#                 email=current_user.email,
+#                 phone=phone,
+#                 location=location,
+#                 user_id=current_user.id
+#             )
+#             db.session.add(new_volunteer)
+#             db.session.commit()
+#             flash('Volunteer application sent successfully!', category='success')
+#             return redirect(url_for('views.home'))
+
+#     return render_template("volunteer_signup.html", user=current_user)
+
 @views.route('/volunteer_signup', methods=['GET', 'POST'])
 @login_required
 def volunteer_signup():
@@ -523,11 +659,21 @@ def volunteer_signup():
                 user_id=current_user.id
             )
             db.session.add(new_volunteer)
+
+            # Track contribution for volunteer signup
+            contribution = Contribution(
+                user_id=current_user.id,
+                activity_type='volunteer_signup',
+                score=1
+            )
+            db.session.add(contribution)
+
             db.session.commit()
             flash('Volunteer application sent successfully!', category='success')
             return redirect(url_for('views.home'))
 
     return render_template("volunteer_signup.html", user=current_user)
+
 
 @views.route('/feedbacks', methods=['GET', 'POST'])
 @login_required
@@ -546,3 +692,75 @@ def feedback():
         else:
             flash("Feedback cannot be empty.", category='error')
     return render_template('feedback.html', user=current_user)
+
+@views.route('/user_contributions')
+@login_required
+def user_contributions():
+    contributions = Contribution.query.filter_by(user_id=current_user.id).order_by(Contribution.created_at.desc()).all()
+    total_score = sum(c.score for c in contributions)
+    messages = AppreciationMessage.query.filter_by(user_id=current_user.id).order_by(AppreciationMessage.created_at.desc()).all()
+    return render_template('user_contributions.html', user=current_user, contributions=contributions, total_score=total_score, messages=messages)
+
+@views.route('/admin_contributions', methods=['GET', 'POST'])
+@login_required
+def admin_contributions():
+    if current_user.id != 1:
+        flash('Access denied!', category='error')
+        return redirect(url_for('views.home'))
+
+    # Get top 3 scorers
+    top_scorers = db.session.query(
+        User.id,
+        User.first_name,
+        sql_func.sum(Contribution.score).label('total_score'),
+        sql_func.max(Contribution.created_at).label('last_activity')
+    ).join(Contribution).group_by(User.id, User.first_name).order_by(
+        sql_func.sum(Contribution.score).desc(),
+        sql_func.max(Contribution.created_at).desc()
+    ).limit(3).all()
+
+    # Get all users with contributions for messaging
+    users_with_contributions = db.session.query(
+        User.id,
+        User.first_name,
+        sql_func.sum(Contribution.score).label('total_score')
+    ).join(Contribution).group_by(User.id, User.first_name).all()
+
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        message = request.form.get('message')
+        if user_id and message:
+            appreciation = AppreciationMessage(
+                user_id=user_id,
+                message=message
+            )
+            db.session.add(appreciation)
+            db.session.commit()
+            flash('Appreciation message sent!', category='success')
+        else:
+            flash('User and message are required!', category='error')
+
+    return render_template(
+        'admin_contributions.html',
+        user=current_user,
+        top_scorers=top_scorers,
+        users_with_contributions=users_with_contributions
+    )
+
+@views.route('/user_contributions/<int:user_id>')
+@login_required
+def view_user_contributions(user_id):
+    if current_user.id != 1:
+        flash('Access denied!', category='error')
+        return redirect(url_for('views.home'))
+    
+    user = User.query.get_or_404(user_id)
+    contributions = Contribution.query.filter_by(user_id=user_id).order_by(Contribution.created_at.desc()).all()
+    total_score = sum(c.score for c in contributions)
+    return render_template(
+        'view_user_contributions.html',
+        user=current_user,
+        target_user=user,
+        contributions=contributions,
+        total_score=total_score
+    )

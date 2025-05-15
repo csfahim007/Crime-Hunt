@@ -212,10 +212,11 @@
                         <p class="card-text">{{ event.description|truncate(100) }}</p>
                         <div class="event-details">
                             <p><strong>Max Participants:</strong> {{ event.max_participants }}</p>
+                            <p><strong>Interested:</strong> {{ event.participants|length }}</p>
                         </div>
                         <a href="{{ url_for('views.view_event', event_id=event.id) }}" class="btn btn-primary">View Details</a>
                         
-                        {% if not user.id == 1 %}
+                        {% if current_user.id != 1 %}
                             <button class="interest-button {{ 'btn-danger' if event.is_interested else 'btn-success' }}" 
                                     data-event-id="{{ event.id }}"
                                     data-interest="{{ 'true' if event.is_interested else 'false' }}">
@@ -238,30 +239,39 @@
 
 {% block javascript %}
 <script>
-    $(document).ready(function() {
-        $('.interest-button').click(function() {
-            var button = $(this);
-            var eventId = button.data('event-id');
-            
-            $.ajax({
-                url: '/show-interest/' + eventId,
-                type: 'POST',
-                success: function(response) {
-                    if(response.message.includes('Showed')) {
+$(document).ready(function() {
+    $('.interest-button').click(function() {
+        var button = $(this);
+        var eventId = button.data('event-id');
+        
+        $.ajax({
+            url: '/show_interest/' + eventId,
+            type: 'POST',
+            success: function(response) {
+                // Check if response contains is_interested
+                if (response.hasOwnProperty('is_interested')) {
+                    if (response.is_interested) {
                         button.removeClass('btn-success').addClass('btn-danger');
                         button.text('Remove Interest');
-                        button.data('interest', 'true');
                     } else {
                         button.removeClass('btn-danger').addClass('btn-success');
                         button.text('Show Interest');
-                        button.data('interest', 'false');
                     }
-                },
-                error: function(xhr) {
-                    alert('Error: ' + xhr.responseJSON.error);
+                    // Update the interested count immediately
+                    var interestedCount = button.closest('.event-card').find('.event-details p:contains("Interested")');
+                    var currentCount = parseInt(interestedCount.text().match(/\d+/)[0]);
+                    interestedCount.html('<strong>Interested:</strong> ' + 
+                        (response.is_interested ? currentCount + 1 : currentCount - 1));
+                } else {
+                    console.error('Unexpected response format:', response);
                 }
-            });
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr.responseText);
+                alert('Error updating interest. Please try again.');
+            }
         });
     });
+});
 </script>
 {% endblock %}

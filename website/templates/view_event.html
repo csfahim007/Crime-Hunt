@@ -52,7 +52,7 @@
         margin-bottom: 1rem;
         line-height: 1.6;
     }
-    .event-detail-card .btn, .interest-button {
+    .event-detail-card .btn {
         background: #4a90e2;
         color: #ffffff;
         border: none;
@@ -63,12 +63,12 @@
         overflow: hidden;
         font-weight: 500;
     }
-    .event-detail-card .btn:hover, .interest-button:hover {
+    .event-detail-card .btn:hover {
         background: #357abd;
         transform: translateY(-2px);
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
-    .event-detail-card .btn::after, .interest-button::after {
+    .event-detail-card .btn::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -80,22 +80,16 @@
         transform: translate(-50%, -50%);
         transition: width 0.3s ease, height 0.3s ease;
     }
-    .event-detail-card .btn:active::after, .interest-button:active::after {
+    .event-detail-card .btn:active::after {
         width: 200px;
         height: 200px;
-    }
-    .interest-button.btn-danger {
-        background: #dc3545;
-    }
-    .interest-button.btn-danger:hover {
-        background: #c82333;
     }
     @media (max-width: 768px) {
         .event-detail-container {
             max-width: 100%;
             margin: 1rem;
         }
-        .event-detail-card .btn, .interest-button {
+        .event-detail-card .btn {
             width: 100%;
             margin-bottom: 0.5rem;
         }
@@ -122,43 +116,7 @@
         <p><strong>Total Interested Participants:</strong> {{ event.max_participants - (event.max_participants - event.participants|length) }}</p>
         {% endif %}
 
-        {% if not user.id == 1 %}
-            <button class="interest-button {{ 'btn-danger' if is_interested else 'btn-success' }}"
-                    data-event-id="{{ event.id }}"
-                    data-interest="{{ 'true' if is_interested else 'false' }}">
-                {{ 'Remove Interest' if is_interested else 'Show Interest' }}
-            </button>
-        {% endif %}
-
         <a href="{{ url_for('views.upcoming_events') }}" class="btn mt-3">Back to Events</a>
     </div>
 </div>
-
-<script>
-    $(document).ready(function() {
-        $('.interest-button').click(function() {
-            var button = $(this);
-            var eventId = button.data('event-id');
-            
-            $.ajax({
-                url: '/show-interest/' + eventId,
-                type: 'POST',
-                success: function(response) {
-                    if(response.message.includes('Showed')) {
-                        button.removeClass('btn-success').addClass('btn-danger');
-                        button.text('Remove Interest');
-                        button.data('interest', 'true');
-                    } else {
-                        button.removeClass('btn-danger').addClass('btn-success');
-                        button.text('Show Interest');
-                        button.data('interest', 'false');
-                    }
-                },
-                error: function(xhr) {
-                    alert('Error: ' + xhr.responseJSON.error);
-                }
-            });
-        });
-    });
-</script>
 {% endblock %}
