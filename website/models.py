@@ -72,9 +72,11 @@ class Volunteer(db.Model):
         return f'<Volunteer {self.name}>'
 
 class Feedback(db.Model):
+    __tablename__ = 'feedback'
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(500), nullable=False)
-    date = db.Column(db.DateTime, default=db.func.current_timestamp())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return f'<Feedback {self.message[:20]}>'
+        return f'<Feedback {self.text[:20]}>'

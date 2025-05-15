@@ -544,4 +544,4 @@ def feedback():
             return redirect(url_for('views.home'))
         else:
             flash("Feedback cannot be empty.", category='error')
-    return render_template('feedback_form.html', user=current_user)
+    return render_template('feedback.html', user=current_user)
