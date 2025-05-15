@@ -20,34 +20,14 @@ searched_location = None
 m = folium.Map(
     location=default_location,
     zoom_start=zoom_level,
-    tiles='cartodbdark_matter',
-    attr='Map tiles by CartoDB, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'
+    tiles='cartodbdark_matter'
 )
 crime_locations = []
 
-def clear_markers():
-    global m, default_location, zoom_level
-    m = folium.Map(
-        location=default_location,
-        zoom_start=zoom_level,
-        tiles='cartodbdark_matter',
-        attr='Map tiles by CartoDB, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'
-    )
 
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    clear_markers()
-    global crime_locations, m
-    m = folium.Map(
-        location=default_location,
-        zoom_start=zoom_level,
-        tiles='cartodbdark_matter',
-        attr='Map tiles by CartoDB, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'
-    )
-    
-    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
-    
     chats = Chat.query.all()
     crimes = Crime.query.all()
     categories = Category.query.all()
@@ -55,10 +35,10 @@ def home():
         crime.user = User.query.get(crime.user_id)
         if crime.location and crime.location not in crime_locations:
             crime_locations.append(crime.location)
+            
     for crime_location in crime_locations:
-        if crime_location:  
-            geolocator = Nominatim(user_agent="crime_map")
-            location = geolocator.geocode(crime_location)  
+        if crime_location:
+            location = safe_geocode(crime_location)
             if location:
                 searched_location = [location.latitude, location.longitude]     
                 folium.CircleMarker(
@@ -75,8 +55,7 @@ def home():
                           user=current_user, 
                           crimes=crimes, 
                           categories=categories, 
-                          chats=chats,
-                          upcoming_events=upcoming_events)
+                          chats=chats)
 
 @views.route('/send-chat', methods=['POST'])
 @login_required
@@ -124,7 +103,6 @@ def delete_chat(chat_id):
 @views.route('/upcoming-events')
 @login_required
 def upcoming_events():
-    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
     events = Event.query.filter(Event.date > datetime.now()).all()
     
     if current_user.id != 1:
@@ -134,14 +112,12 @@ def upcoming_events():
                 user_id=current_user.id
             ).first() is not None
     
-    return render_template('upcoming_events.html', events=events, user=current_user, upcoming_events=upcoming_events)
+    return render_template('upcoming_events.html', events=events, user=current_user)
 
-
-
-
-
-
-
+@views.context_processor
+def inject_upcoming_events():
+    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
+    return {'upcoming_events': upcoming_events}
 
 @views.route('/manage-events', methods=['GET'])
 @login_required
@@ -150,22 +126,20 @@ def manage_events():
         flash('Access denied!', category='error')
         return redirect(url_for('views.home'))
     
-    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
     events = Event.query.all()
     for event in events:
         event.interested_users = EventParticipant.query.filter_by(event_id=event.id).count()
-    return render_template('manage_events.html', user=current_user, events=events, upcoming_events=upcoming_events)
+    return render_template('manage_events.html', user=current_user, events=events)
 
 @views.route('/view-event/<int:event_id>')
 @login_required
 def view_event(event_id):
-    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
     event = Event.query.get_or_404(event_id)
     is_interested = EventParticipant.query.filter_by(
         event_id=event_id, 
         user_id=current_user.id
     ).first() is not None
-    return render_template('view_event.html', event=event, user=current_user, is_interested=is_interested, upcoming_events=upcoming_events)
+    return render_template('view_event.html', event=event, user=current_user, is_interested=is_interested)
 
 @views.route('/show-interest/<int:event_id>', methods=['POST'])
 @login_required
@@ -208,7 +182,6 @@ def create_event():
     if current_user.id != 1:
         flash('Access denied!', category='error')
         return redirect(url_for('views.home'))
-    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
     if request.method == 'POST':
         title = request.form.get('title')
         description = request.form.get('description')
@@ -227,7 +200,7 @@ def create_event():
         db.session.commit()
         flash('Event created successfully!', category='success')
         return redirect(url_for('views.manage_events'))
-    return render_template('create_event.html', user=current_user, upcoming_events=upcoming_events)
+    return render_template('create_event.html', user=current_user)
 
 @views.route('/edit-event/<int:event_id>', methods=['GET', 'POST'])
 @login_required
@@ -235,7 +208,6 @@ def edit_event(event_id):
     if current_user.id != 1:
         flash('Access denied!', category='error')
         return redirect(url_for('views.home'))
-    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
     event = Event.query.get_or_404(event_id)
     if request.method == 'POST':
         event.title = request.form.get('title')
@@ -246,7 +218,7 @@ def edit_event(event_id):
         db.session.commit()
         flash('Event updated successfully!', category='success')
         return redirect(url_for('views.manage_events'))
-    return render_template('edit_event.html', event=event, user=current_user, upcoming_events=upcoming_events)
+    return render_template('edit_event.html', event=event, user=current_user)
 
 @views.route('/delete-event/<int:event_id>', methods=['POST'])
 @login_required
@@ -263,7 +235,6 @@ def admin_tools():
         flash('Access denied!', category='error')
         return redirect(url_for('views.home'))
 
-    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
     crimes = Crime.query.all()
     for crime in crimes:
         crime.user = User.query.get(crime.user_id)
@@ -290,12 +261,11 @@ def admin_tools():
             else:
                 flash('Category not found.', category='error')
     
-    return render_template('admin_tools.html', user=current_user, crimes=crimes, categories=categories, upcoming_events=upcoming_events)
+    return render_template('admin_tools.html', user=current_user, crimes=crimes, categories=categories)
 
 @views.route('/stats', methods=['GET'])
 @login_required
 def stats():
-    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
     crimes = Crime.query.all()
     location_filter = request.args.get('location', '')
     start_date_str = request.args.get('start_date', '')
@@ -327,8 +297,7 @@ def stats():
         location_filter=location_filter,
         crime_count=len(filtered_crimes),
         location_counts=location_counts,
-        crimes=crimes,
-        upcoming_events=upcoming_events)
+        crimes=crimes)
 
 @views.route('/delete-crime/<int:crime_id>', methods=['POST'])
 @login_required
@@ -349,7 +318,6 @@ def delete_crime(crime_id):
 @views.route('/report_crime', methods=['GET', 'POST'])
 @login_required
 def report_crime():
-    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
     crimes = Crime.query.all()
     categories = Category.query.all()
     if request.method == 'POST': 
@@ -381,7 +349,7 @@ def report_crime():
             else:
                 flash('Invalid category selected!', category='error')
     
-    return render_template("report_crime.html", user=current_user, crimes=crimes, categories=categories, upcoming_events=upcoming_events)
+    return render_template("report_crime.html", user=current_user, crimes=crimes, categories=categories)
 
 @views.route('/law_enforcement', methods=['GET', 'POST'])
 @login_required
@@ -390,29 +358,25 @@ def law_enforcement():
         flash('Access denied!', category='error')
         return redirect(url_for('views.home'))
 
-    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
     crimes = Crime.query.all()  
     for crime in crimes:
         crime.user = User.query.get(crime.user_id)
-    return render_template('law_enforcement.html', user=current_user, crimes=crimes, upcoming_events=upcoming_events)
+    return render_template('law_enforcement.html', user=current_user, crimes=crimes)
 
 @views.route('/community_resources', methods=['GET'])
 @login_required
 def community_resources():
-    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
-    return render_template('community_resources.html', user=current_user, upcoming_events=upcoming_events)
+    return render_template('community_resources.html', user=current_user)
 
 @views.route('/public_awareness', methods=['GET'])
 @login_required
 def public_awareness():
-    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
-    return render_template('public_awareness.html', user=current_user, upcoming_events=upcoming_events)
+    return render_template('public_awareness.html', user=current_user)
 
 @views.route('/educational_resources', methods=['GET'])
 @login_required
 def educational_resources():
-    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
-    return render_template('educational_resources.html', user=current_user, upcoming_events=upcoming_events)
+    return render_template('educational_resources.html', user=current_user)
 
 def get_upcoming_events():
     """Helper function to get upcoming events"""
@@ -422,21 +386,42 @@ def get_upcoming_events():
         upcoming_events=upcoming_events,
         new_events=upcoming_events > 0
     )
+def clear_markers():
+    global m, default_location, zoom_level
+    m = folium.Map(
+        location=default_location,
+        zoom_start=zoom_level,
+        tiles='cartodbdark_matter',
+    )
+
+def safe_geocode(location_str, attempts=3, timeout=5):
+    """Helper function to safely geocode locations with retries"""
+    if not location_str:
+        return None
+        
+    geolocator = Nominatim(user_agent="crime_map", timeout=timeout)
+    
+    for _ in range(attempts):
+        try:
+            return geolocator.geocode(location_str)
+        except Exception as e:
+            print(f"Geocoding error for {location_str}: {str(e)}")
+            continue
+    return None
 
 @views.route('/live-map', methods=['GET', 'POST'])
 @login_required
 def live_map():
     global response, brac_location, default_location, zoom_level, searched_location, m
-    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
     response = None
     clear_markers()
     m = folium.Map(
         location=default_location,
         zoom_start=zoom_level,
-        tiles='cartodbdark_matter',
-        attr='Map tiles by CartoDB, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'
+        tiles='cartodbdark_matter'
     )
     
+    # Add BRAC University marker
     folium.CircleMarker(
         location=brac_location,
         radius=10,
@@ -447,62 +432,79 @@ def live_map():
         popup="BRAC University"
     ).add_to(m)
     
+    # Add all crime locations from database
+    crimes = Crime.query.all()
+    for crime in crimes:
+        if crime.location:
+            location = safe_geocode(crime.location)
+            if location:
+                folium.CircleMarker(
+                    location=[location.latitude, location.longitude],
+                    radius=random.randint(10,50),
+                    color="red",
+                    fill=True,
+                    fill_color="red",
+                    fill_opacity=0.4,
+                    popup=f"Crime: {crime.title}<br>Location: {crime.location}<br>Date: {crime.date.strftime('%Y-%m-%d')}"
+                ).add_to(m)
+    
+    # Handle search functionality
     if request.method == 'POST':
         search_query = request.form.get('location')
         if search_query:
-            geolocator = Nominatim(user_agent="crime_map")
-            location = geolocator.geocode(search_query) 
+            location = safe_geocode(search_query)
             if location:
                 searched_location = [location.latitude, location.longitude]
                 folium.Marker(
-                    [location.latitude, location.longitude],
+                    searched_location,
                     popup=location.address,
                     tooltip="Searched Location",
-                    icon=folium.Icon(color="red")
+                    icon=folium.Icon(color="green")
                 ).add_to(m)
                 m.location = searched_location
-    else:
-        # Handle centering on user location if requested
-        if 'center_on_user' in request.args:
-            clear_markers()
-            response = requests.get("https://ipinfo.io/json")
-            if response and response.status_code == 200:
-                data = response.json()
-                location = data.get("loc", "")
-                if location:
-                    latitude, longitude = map(float, location.split(","))
-                    user_location = [float(latitude), float(longitude)]
-                    folium.CircleMarker(
-                        location=user_location,
-                        radius=10,
-                        color="blue",
-                        fill=True,
-                        fill_color="blue",
-                        fill_opacity=0.6,
-                        popup="Your Location"
-                    ).add_to(m)
-                    folium.Marker(user_location, popup="Your Location", icon=folium.Icon(color="red")).add_to(m)
-                    m.location = user_location
-                else:
-                    folium.CircleMarker(
-                        location=brac_location,
-                        radius=10,
-                        color="blue",
-                        fill=True,
-                        fill_color="blue",
-                        fill_opacity=0.6,
-                        popup="BRAC University"
-                    ).add_to(m)
-                    folium.Marker(brac_location, popup="BRAC University", icon=folium.Icon(color="red")).add_to(m)
-                    m.location = brac_location
+            else:
+                flash('Location could not be found. Please try again.', category='error')
+
+    # Handle user location centering
+    elif 'center_on_user' in request.args:
+        clear_markers()
+        response = requests.get("https://ipinfo.io/json")
+        if response and response.status_code == 200:
+            data = response.json()
+            location = data.get("loc", "")
+            if location:
+                latitude, longitude = map(float, location.split(","))
+                user_location = [float(latitude), float(longitude)]
+                folium.CircleMarker(
+                    location=user_location,
+                    radius=15,
+                    color="blue",
+                    fill=True,
+                    fill_color="blue",
+                    fill_opacity=0.6,
+                    popup="Your Location"
+                ).add_to(m)
+                folium.Marker(user_location, popup="Your Location", icon=folium.Icon(color="red")).add_to(m)
+                m.location = user_location
+            else:
+                folium.CircleMarker(
+                    location=brac_location,
+                    radius=10,
+                    color="blue",
+                    fill=True,
+                    fill_color="blue",
+                    fill_opacity=0.6,
+                    popup="BRAC University"
+                ).add_to(m)
+                folium.Marker(brac_location, popup="BRAC University", icon=folium.Icon(color="red")).add_to(m)
+                m.location = brac_location
  
     map_html = m._repr_html_()
-    return render_template('live_map.html', map_html=map_html, user=current_user, upcoming_events=upcoming_events)
+    return render_template('live_map.html', map_html=map_html, user=current_user)
 
 @views.route('/volunteer_signup', methods=['GET', 'POST'])
 @login_required
 def volunteer_signup():
-    upcoming_events = Event.query.filter(Event.date > datetime.now()).count()
     if request.method == 'POST':
         phone = request.form.get('phone')
         location = request.form.get('location')
@@ -524,4 +526,4 @@ def volunteer_signup():
             flash('Volunteer application sent successfully!', category='success')
             return redirect(url_for('views.home'))
 
-    return render_template("volunteer_signup.html", user=current_user, upcoming_events=upcoming_events)
+    return render_template("volunteer_signup.html", user=current_user)
