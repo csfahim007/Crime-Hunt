@@ -34,7 +34,7 @@
 
     .event-card {
         position: absolute;
-        top: 6rem;
+        top: 10rem;
         left: 2rem;
         width: 300px;
         background: linear-gradient(145deg, #285484, #3a7d55, #99891e);
@@ -232,8 +232,8 @@
     .chat-container {
         position: fixed;
         right: 1rem;
-        top: 5rem;
-        width: 320px;
+        top: 10rem;
+        width: 350px;
         max-height: 70vh;
         background: linear-gradient(145deg, #ffffff, #b107ef);
         border-radius: 12px;
@@ -607,6 +607,7 @@
     <a href="{{ url_for('views.law_enforcement') }}" class="btn btn-info" data-toggle="tooltip" title="Connect with law enforcement">Law Enforcement</a>
     <a href="{{ url_for('views.public_awareness') }}" class="btn btn-info" data-toggle="tooltip" title="Learn about safety">Public Awareness</a>
     <a href="{{ url_for('views.educational_resources') }}" class="btn btn-info" data-toggle="tooltip" title="Educational materials">Educational Resources</a>
+    <a href="{{ url_for('views.report_crime') }}" class="btn btn-info" data-toggle="tooltip" title="Report a new crime">Report Crime</a>
 </div>
 
 
@@ -654,10 +655,6 @@
         </form>
     </div>
 </div>
-
-<a href="/report_crime" class="report-crime-button" data-toggle="tooltip" title="Report a new crime">
-    <i class="fas fa-exclamation-triangle"></i> Report Crime
-</a>
 
 <a href="/volunteer_signup" class="volunteer-button" data-toggle="tooltip" title="Sign up to be a volunteer">
     <i class="fas fa-hands-helping"></i> Volunteer Signup

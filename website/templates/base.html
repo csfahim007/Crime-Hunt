@@ -198,6 +198,9 @@
       <div class="collapse navbar-collapse" id="navbar">
         <ul class="navbar-nav ml-auto">
           {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" id="home" href="/" data-toggle="tooltip" title="Go to homepage">Home</a>
+            </li>
             {% if user.id == 1 %}
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('views.manage_events') }}">Manage Events</a>
@@ -212,12 +215,6 @@
               </a>
             </li>
             {% endif %}
-            <li class="nav-item">
-              <a class="nav-link" id="home" href="/" data-toggle="tooltip" title="Go to homepage">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="stats" href="{{ url_for('views.stats') }}" data-toggle="tooltip" title="View crime statistics">Stats</a>
-            </li>
             {% if user.id == 1 %}
             <li class="nav-item">
               <a class="nav-link" id="admin-tools" href="/admin-tools" data-toggle="tooltip" title="Access admin tools">Tools</a>
