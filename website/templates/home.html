@@ -18,18 +18,23 @@
 
     .main-title {
         font-size: 3.8rem;
-        font-weight: 700;
+        font-weight: 800;
         text-align: center;
         text-transform: uppercase;
-        letter-spacing: 1.5px;
-        background: linear-gradient(90deg, #343702, #fafbfb, #1a011a);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin: 2rem 0;
+        letter-spacing: 2px;
+        color: #ffffff;
+        background: none;
+        -webkit-text-fill-color: #ffffff;
+        margin: 2rem auto;
         animation: fadeIn 1s ease;
-        max-width: 80%;
-        margin-left: 10%;
+        max-width: 90%;
+        transform: translateX(-5%);
+        text-shadow: 
+            2px 2px 4px rgba(0, 0, 0, 0.5),
+            0 0 10px rgba(255, 255, 255, 0.3);
+        padding: 1.5rem;
+        position: relative;
+        z-index: 10;
     }
 
     .event-card {
@@ -606,8 +611,9 @@
     <a href="{{ url_for('views.community_resources') }}" class="btn btn-info" data-performance="tooltip" title="Access community support">Community Resources</a>
     <a href="{{ url_for('views.law_enforcement') }}" class="btn btn-info" data-toggle="tooltip" title="Connect with law enforcement">Law Enforcement</a>
     <a href="{{ url_for('views.public_awareness') }}" class="btn btn-info" data-toggle="tooltip" title="Learn about safety">Public Awareness</a>
-    <a href="{{ url_for('views.educational_resources') }}" class="btn btn-info" data-toggle="tooltip" title="Educational materials">Educational Resources</a>
-    <a href="{{ url_for('views.report_crime') }}" class="btn btn-info" data-toggle="tooltip" title="Report a new crime">Report Crime</a>
+    <a href="{{ url_for('views.report_crime') }}" class="btn btn-info" style="background: linear-gradient(145deg, #e74c3c, #c0392b); font-size: 1.2rem; padding: 1rem 2rem; font-weight: 600; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);" data-toggle="tooltip" title="Report a new crime">
+        <i class="fas fa-exclamation-triangle"></i> Report Crime
+    </a>
 </div>
 
 
