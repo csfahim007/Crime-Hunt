@@ -136,6 +136,13 @@ def upcoming_events():
     
     return render_template('upcoming_events.html', events=events, user=current_user, upcoming_events=upcoming_events)
 
+
+
+
+
+
+
+
 @views.route('/manage-events', methods=['GET'])
 @login_required
 def manage_events():

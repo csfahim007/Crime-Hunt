@@ -442,6 +442,35 @@
         box-shadow: 0 6px 15px rgba(38, 219, 10, 0.25);
     }
 
+    .report-button::after{
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255,255,255,0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.3s ease, height 0.3s ease;
+    }
+
+    .feedback-button{
+        position: fixed;
+        bottom: 1.5rem;
+        left: 1.5rem;
+        background: linear-gradient(145deg, #f0a363, #2c3e50);
+        color: #fff;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        font-size: 1.2rem;
+        z-index: 1000;
+        transition: all 0.3s ease;
+    }
+
+
+
     .volunteer-button {
         position: fixed;
         bottom: 2rem;
@@ -578,6 +607,11 @@
     <a href="{{ url_for('views.law_enforcement') }}" class="btn btn-info" data-toggle="tooltip" title="Connect with law enforcement">Law Enforcement</a>
     <a href="{{ url_for('views.public_awareness') }}" class="btn btn-info" data-toggle="tooltip" title="Learn about safety">Public Awareness</a>
     <a href="{{ url_for('views.educational_resources') }}" class="btn btn-info" data-toggle="tooltip" title="Educational materials">Educational Resources</a>
+</div>
+
+
+<div style="position: fixed; bottom: 10px; left: 10px;">
+    <a href="/feedbacks" class="feedback-button">Give Feedback</a>
 </div>
 
 <div class="filter-container">

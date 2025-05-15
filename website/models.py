@@ -70,3 +70,16 @@ class Volunteer(db.Model):
 
     def __repr__(self):
         return f'<Volunteer {self.name}>'
+
+
+
+
+from . import db
+
+class Feedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(500), nullable=False)
+    date = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    def __repr__(self):
+        return f'<Feedback {self.message[:20]}>'
