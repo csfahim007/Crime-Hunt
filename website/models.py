@@ -77,6 +77,8 @@ class Feedback(db.Model):
     text = db.Column(db.String(500), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    user = db.relationship('User', backref=db.backref('feedbacks', lazy=True))
 
     def __repr__(self):
         return f'<Feedback {self.text[:20]}>'
